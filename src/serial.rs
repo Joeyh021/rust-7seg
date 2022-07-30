@@ -1,3 +1,4 @@
+use riscv::singleton;
 use volatile_register::*;
 
 const SR_RX_FIFO_VALID_DATA: u32 = 1 << 0;
@@ -17,8 +18,8 @@ struct UartRegs {
 }
 
 impl Serial {
-    pub fn new() -> Self {
-        Serial(unsafe { (UART_ADDR as *mut UartRegs).as_mut().unwrap() })
+    pub unsafe fn new() -> Self {
+        Serial((UART_ADDR as *mut UartRegs).as_mut().unwrap())
     }
 
     pub fn write_byte(&mut self, byte: u8) {
@@ -35,5 +36,9 @@ impl Serial {
     pub fn println(&mut self, msg: &str) {
         self.print(msg);
         self.print("\r\n");
+    }
+
+    pub fn take() -> Option<&'static mut Self> {
+        singleton!(:Serial = unsafe{Serial::new()})
     }
 }
