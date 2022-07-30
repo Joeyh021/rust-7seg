@@ -19,15 +19,23 @@ pub extern "C" fn main() -> ! {
     serial.println("Hello from Rust!");
     delay.delay_ms(100_u8);
 
-    for i in 0x0..=0xf {
-        display.set_all(i);
-        delay.delay_ms(100_u8);
+    for i in (0..8).rev() {
+        display.set(i, i as u32);
     }
 
-    delay.delay_ms(100_u8);
-
     loop {
-        delay.delay_ms(100_u8);
+        for i in (1..8).rev() {
+            display.set(i, display.get(i - 1));
+        }
+        display.set(0, (display.get(0) + 1) % 10);
+
+        for i in 0..8 {
+            serial.write_byte(display.get(i) as u8 + 48);
+            serial.print(" ");
+        }
+        serial.println("");
+
+        delay.delay_ms(1000);
     }
 }
 
