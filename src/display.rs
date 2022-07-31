@@ -25,10 +25,12 @@ impl Display {
         self.0.get(idx).unwrap().read()
     }
 
-    pub fn set(&self, idx: usize, val: u32) {
+    pub fn set(&mut self, idx: usize, val: u32) {
         unsafe { self.0.get(idx).unwrap().write(val) }
     }
-    pub fn take() -> Option<&'static mut Self> {
-        singleton!(:Display = unsafe{Display::new()})
+
+    pub fn take() -> Option<Self> {
+        singleton!(:&'static mut [RW<u32>; 8] = unsafe{(DISPLAY_ADDR as *mut [RW<u32>; 8]).as_mut()?})
+            .map(|regs| Display(regs))
     }
 }

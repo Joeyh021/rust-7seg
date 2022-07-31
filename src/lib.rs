@@ -10,9 +10,9 @@ use serial::Serial;
 
 #[no_mangle]
 pub extern "C" fn main() -> ! {
-    let serial = Serial::take().unwrap();
+    let mut serial = Serial::take().unwrap();
     let mut delay = McycleDelay::new(50_000_000);
-    let display = Display::take().unwrap();
+    let mut display = Display::take().unwrap();
     display.clear();
 
     serial.print("\n");

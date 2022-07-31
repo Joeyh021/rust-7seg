@@ -38,7 +38,8 @@ impl Serial {
         self.print("\r\n");
     }
 
-    pub fn take() -> Option<&'static mut Self> {
-        singleton!(:Serial = unsafe{Serial::new()})
+    pub fn take() -> Option<Self> {
+        singleton!(:&'static mut UartRegs = unsafe{(UART_ADDR as *mut UartRegs).as_mut()?})
+            .map(|regs| Serial(regs))
     }
 }
